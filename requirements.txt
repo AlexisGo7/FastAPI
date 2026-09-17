@@ -11,6 +11,7 @@ idna==3.19
 pydantic==2.13.5
 pydantic_core==2.46.5
 SQLAlchemy==2.0.52
+alembic==1.16.5
 starlette==1.6.0
 typing-inspection==0.4.4
 typing_extensions==4.16.0
