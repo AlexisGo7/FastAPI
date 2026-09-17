@@ -1,6 +1,6 @@
 # device_systems
 
-API REST para gestionar usuarios, dispositivos tecnologicos y prestamos con FastAPI, SQLAlchemy, SQLite y Alembic.
+API REST para gestionar usuarios, dispositivos tecnológicos y préstamos con FastAPI, SQLAlchemy, SQLite y Alembic.
 
 ![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.141.1-009688?logo=fastapi&logoColor=white)
@@ -9,37 +9,36 @@ API REST para gestionar usuarios, dispositivos tecnologicos y prestamos con Fast
 
 ## Resumen
 
-`device_systems` es una API backend para controlar un inventario de equipos
-tecnologicos y su historial de prestamos. El proyecto demuestra como pasar de
-un CRUD de usuarios a un sistema relacional con migraciones, claves foraneas,
-relaciones ORM, consultas con joins y reglas de negocio.
+`device_systems` es una API backend para controlar un inventario de equipos tecnológicos y su historial de préstamos. El proyecto demuestra cómo pasar de un CRUD de usuarios a un sistema relacional con migraciones, claves foráneas, relaciones ORM, consultas con joins y reglas de negocio.
 
-## Indice
+## Índice
 
 - [Objetivo](#objetivo-de-la-actividad)
 - [Funcionalidades](#funcionalidades-implementadas)
 - [Arquitectura](#arquitectura)
-- [Instalacion](#instalacion)
+- [Instalación](#instalacion)
 - [Migraciones](#migraciones-con-alembic)
-- [Ejecucion](#ejecucion)
+- [Ejecución](#ejecucion)
 - [Endpoints](#endpoints-principales)
 - [Pruebas](#pruebas-funcionales)
 - [Evidencias](#evidencias-de-entrega)
+- [Rama de trabajo](#rama-de-trabajo)
+- [Reflexión final](#reflexion-final)
 
 ## Objetivo de la actividad
 
-Esta actividad evoluciona el CRUD de usuarios de la guia anterior hacia un sistema backend relacional. El objetivo principal es incorporar migraciones controladas con Alembic, asociaciones entre los modelos `User`, `Device` y `Loan`, y consultas avanzadas con `join`, filtros y relaciones.
+Esta actividad evoluciona el CRUD de usuarios de la guía anterior hacia un sistema backend relacional. El objetivo principal es incorporar migraciones controladas con Alembic, asociaciones entre los modelos `User`, `Device` y `Loan`, y consultas avanzadas con `join`, filtros y relaciones.
 
-La API conserva el recurso `/users` y agrega `/devices` y `/loans`. El sistema permite registrar usuarios y dispositivos, crear prestamos, impedir prestamos de dispositivos no disponibles, consultar historiales y devolver equipos actualizando su disponibilidad.
+La API conserva el recurso `/users` y agrega `/devices` y `/loans`. El sistema permite registrar usuarios y dispositivos, crear préstamos, impedir préstamos de dispositivos no disponibles, consultar historiales y devolver equipos actualizando su disponibilidad.
 
 ## Funcionalidades implementadas
 
 - CRUD de usuarios persistido en SQLite.
-- CRUD de dispositivos con numero de serie unico.
+- CRUD de dispositivos con número de serie único.
 - Relaciones `User -> Loan`, `Device -> Loan` y `Loan -> User/Device`.
-- Creacion de prestamos con validacion de usuario, dispositivo y disponibilidad.
-- Devolucion de prestamos con fecha de retorno y disponibilidad restaurada.
-- Historial de prestamos por usuario y por dispositivo.
+- Creación de préstamos con validación de usuario, dispositivo y disponibilidad.
+- Devolución de préstamos con fecha de retorno y disponibilidad restaurada.
+- Historial de préstamos por usuario y por dispositivo.
 - Filtros por estado, correo de usuario, tipo de dispositivo, marca y texto.
 - Migraciones versionadas con Alembic.
 - Validaciones Pydantic y respuestas documentadas en OpenAPI.
@@ -48,27 +47,27 @@ La API conserva el recurso `/users` y agrega `/devices` y `/loans`. El sistema p
 
 | Capa | Responsabilidad |
 | --- | --- |
-| `models` | Tablas, columnas, claves foraneas y relaciones SQLAlchemy. |
-| `schemas` | Validacion de datos de entrada y salida con Pydantic. |
-| `routes` | Endpoints HTTP y codigos de respuesta. |
+| `models` | Tablas, columnas, claves foráneas y relaciones SQLAlchemy. |
+| `schemas` | Validación de datos de entrada y salida con Pydantic. |
+| `routes` | Endpoints HTTP y códigos de respuesta. |
 | `services` | Consultas, reglas CRUD y transacciones. |
-| `dependencies` | Sesion de base de datos por solicitud. |
+| `dependencies` | Sesión de base de datos por solicitud. |
 | `alembic` | Migraciones versionadas de la base de datos. |
 
-### Flujo de un prestamo
+### Flujo de un préstamo
 
 ```mermaid
 flowchart LR
-  U[Usuario existente] --> L[POST /loans]
-  D[Dispositivo disponible] --> L
-  L --> A[Prestamo activo]
-  A --> B[Dispositivo no disponible]
-  B --> R[PATCH /loans/id/return]
-  R --> H[Prestamo devuelto]
-  H --> D2[Dispositivo disponible]
+    U[Usuario existente] --> L[POST /loans]
+    D[Dispositivo disponible] --> L
+    L --> A[Préstamo activo]
+    A --> B[Dispositivo no disponible]
+    B --> R[PATCH /loans/id/return]
+    R --> H[Préstamo devuelto]
+    H --> D2[Dispositivo disponible]
 ```
 
-## Tecnologias
+## Tecnologías
 
 - Python 3.14
 - FastAPI
@@ -107,6 +106,14 @@ device_systems/
 │   ├── versions/
 │   ├── env.py
 │   └── script.py.mako
+├── img/
+│   ├── Ev1.png
+│   ├── Ev2.png
+│   ├── Ev3.png
+│   ├── Ev4.png
+│   ├── Ev5.png
+│   ├── Ev6.png
+│   └── Ev7.png
 ├── alembic.ini
 ├── device_systems.db
 ├── requirements.txt
@@ -121,23 +128,23 @@ Representa a las personas que utilizan el sistema. Conserva los campos `id`, `na
 
 ### Device
 
-Representa los equipos disponibles para prestamo:
+Representa los equipos disponibles para préstamo:
 
-| Campo | Tipo | Restriccion |
+| Campo | Tipo | Restricción |
 | --- | --- | --- |
 | `id` | Integer | Clave primaria |
 | `name` | String | Obligatorio |
-| `serial_number` | String | Obligatorio, unico e indexado |
-| `device_type` | String | laptop, tablet, proyector, camara, router o monitor |
+| `serial_number` | String | Obligatorio, único e indexado |
+| `device_type` | String | laptop, tablet, proyector, cámara, router o monitor |
 | `brand` | String | Opcional |
 | `is_available` | Boolean | Por defecto `True` |
-| `created_at` | DateTime | Fecha automatica |
+| `created_at` | DateTime | Fecha automática |
 
 ### Loan
 
-Representa el prestamo de un dispositivo a un usuario. Contiene `user_id` y `device_id` como claves foraneas, ademas de `loan_date`, `return_date` y `status`. Los estados permitidos son `active`, `returned` y `overdue`.
+Representa el préstamo de un dispositivo a un usuario. Contiene `user_id` y `device_id` como claves foráneas, además de `loan_date`, `return_date` y `status`. Los estados permitidos son `active`, `returned` y `overdue`.
 
-Un usuario puede tener muchos prestamos y un dispositivo puede aparecer en varios prestamos historicos. Cada prestamo pertenece exactamente a un usuario y a un dispositivo mediante `ForeignKey()` y `relationship()` con `back_populates`.
+Un usuario puede tener muchos préstamos y un dispositivo puede aparecer en varios préstamos históricos. Cada préstamo pertenece exactamente a un usuario y a un dispositivo mediante `ForeignKey()` y `relationship()` con `back_populates`.
 
 ## Requisitos previos
 
@@ -145,12 +152,11 @@ Un usuario puede tener muchos prestamos y un dispositivo puede aparecer en vario
 - Git.
 - PowerShell o una terminal compatible con entornos virtuales.
 
-La aplicacion utiliza SQLite, por lo que no requiere instalar un servidor de
-base de datos adicional.
+La aplicación utiliza SQLite, por lo que no requiere instalar un servidor de base de datos adicional.
 
-## Instalacion
+## Instalación
 
-Desde la raiz del proyecto:
+Desde la raíz del proyecto:
 
 ```powershell
 python -m venv venv
@@ -167,7 +173,7 @@ La base de datos se configura en `alembic.ini` con SQLite:
 sqlite:///./device_systems.db
 ```
 
-La metadata de SQLAlchemy se carga en `alembic/env.py` desde los modelos de la aplicacion. Los comandos principales son:
+La metadata de SQLAlchemy se carga en `alembic/env.py` desde los modelos de la aplicación. Los comandos principales son:
 
 ```powershell
 alembic history
@@ -175,7 +181,7 @@ alembic revision --autogenerate -m "create devices and loans tables"
 alembic upgrade head
 ```
 
-En este proyecto existe una migracion versionada en `alembic/versions/8d44b2c4a063_create_devices_and_loans_tables.py`, que crea las tablas `devices` y `loans` sobre la tabla `users` existente.
+En este proyecto existe una migración versionada en `alembic/versions/8d44b2c4a063_create_devices_and_loans_tables.py`, que crea las tablas `devices` y `loans` sobre la tabla `users` existente.
 
 Para comprobar que no existen cambios de esquema pendientes:
 
@@ -183,9 +189,9 @@ Para comprobar que no existen cambios de esquema pendientes:
 .\venv\Scripts\alembic.exe check
 ```
 
-## Ejecucion
+## Ejecución
 
-Primero aplica las migraciones y despues inicia la API:
+Primero aplica las migraciones y después inicia la API:
 
 ```powershell
 .\venv\Scripts\Activate.ps1
@@ -205,7 +211,7 @@ Para detener el servidor, presiona `Ctrl+C`.
 
 ### Users
 
-| Metodo | Ruta | Descripcion |
+| Método | Ruta | Descripción |
 | --- | --- | --- |
 | `GET` | `/users` | Lista, filtra y ordena usuarios |
 | `GET` | `/users/{user_id}` | Consulta un usuario |
@@ -216,7 +222,7 @@ Para detener el servidor, presiona `Ctrl+C`.
 
 ### Devices
 
-| Metodo | Ruta | Descripcion |
+| Método | Ruta | Descripción |
 | --- | --- | --- |
 | `GET` | `/devices` | Lista y filtra dispositivos |
 | `GET` | `/devices/{device_id}` | Consulta un dispositivo |
@@ -230,14 +236,14 @@ Filtros disponibles en `GET /devices`: `device_type`, `is_available`, `brand` y 
 
 ### Loans
 
-| Metodo | Ruta | Descripcion |
+| Método | Ruta | Descripción |
 | --- | --- | --- |
-| `GET` | `/loans` | Lista prestamos con filtros y relaciones |
+| `GET` | `/loans` | Lista préstamos con filtros y relaciones |
 | `GET` | `/loans/details` | Consulta detalles con usuario y dispositivo |
-| `GET` | `/loans/{loan_id}` | Consulta un prestamo |
-| `POST` | `/loans` | Crea un prestamo activo |
+| `GET` | `/loans/{loan_id}` | Consulta un préstamo |
+| `POST` | `/loans` | Crea un préstamo activo |
 | `PATCH` | `/loans/{loan_id}/return` | Devuelve el dispositivo |
-| `GET` | `/users/{user_id}/loans` | Consulta prestamos de un usuario |
+| `GET` | `/users/{user_id}/loans` | Consulta préstamos de un usuario |
 
 Filtros disponibles en `/loans`: `status`, `user_email` y `device_type`.
 
@@ -266,7 +272,7 @@ Crear un dispositivo:
 }
 ```
 
-Crear un prestamo:
+Crear un préstamo:
 
 ```json
 {
@@ -275,7 +281,7 @@ Crear un prestamo:
 }
 ```
 
-La respuesta detallada de un prestamo incluye el estado, las fechas y los datos basicos del usuario y del dispositivo.
+La respuesta detallada de un préstamo incluye el estado, las fechas y los datos básicos del usuario y del dispositivo.
 
 Ejemplo de respuesta detallada:
 
@@ -301,32 +307,32 @@ Ejemplo de respuesta detallada:
 
 ## Manejo de errores
 
-| Situacion | Codigo |
+| Situación | Código |
 | --- | --- |
 | Registro creado | `201 Created` |
-| Consulta o actualizacion exitosa | `200 OK` |
-| Eliminacion exitosa | `204 No Content` |
+| Consulta o actualización exitosa | `200 OK` |
+| Eliminación exitosa | `204 No Content` |
 | Recurso inexistente | `404 Not Found` |
 | Email o serial duplicado | `400 Bad Request` |
-| Dispositivo no disponible o prestamo ya devuelto | `409 Conflict` |
-| Datos invalidos o filtro no permitido | `422 Unprocessable Entity` |
+| Dispositivo no disponible o préstamo ya devuelto | `409 Conflict` |
+| Datos inválidos o filtro no permitido | `422 Unprocessable Entity` |
 
 ## Pruebas funcionales
 
-La implementacion fue verificada con un servidor Uvicorn en un puerto temporal:
+La implementación fue verificada con un servidor Uvicorn en un puerto temporal:
 
-- Migracion aplicada con `alembic upgrade head`.
+- Migración aplicada con `alembic upgrade head`.
 - Usuario creado correctamente.
 - Dispositivo creado correctamente.
-- Prestamo creado y marcado como `active`.
-- Segundo prestamo del mismo dispositivo rechazado con `409`.
+- Préstamo creado y marcado como `active`.
+- Segundo préstamo del mismo dispositivo rechazado con `409`.
 - Consulta `/loans/details` con filtros y datos relacionados.
 - Historial consultado desde `/users/{user_id}/loans` y `/devices/{device_id}/loans`.
 - Dispositivo devuelto con `PATCH /loans/{loan_id}/return`.
 - Disponibilidad restaurada a `true`.
-- Segunda devolucion rechazada con `409`.
+- Segunda devolución rechazada con `409`.
 
-Validaciones tecnicas ejecutadas:
+Validaciones técnicas ejecutadas:
 
 ```powershell
 python -m compileall -q app alembic
@@ -341,17 +347,56 @@ No new upgrade operations detected.
 
 ## Evidencias de entrega
 
-Se deben anexar capturas o registros de:
+A continuación se presentan las capturas de pantalla organizadas que sirven como evidencia de la implementación y pruebas funcionales del proyecto:
 
-1. `alembic init` y estructura de la carpeta Alembic.
-2. `alembic revision --autogenerate`.
-3. `alembic upgrade head` y `alembic history`.
-4. Tablas `users`, `devices`, `loans` y sus relaciones.
-5. Swagger UI con tags `Users`, `Devices` y `Loans`.
-6. Creacion de usuario, dispositivo y prestamo.
-7. Error al prestar un dispositivo no disponible.
-8. Consultas con joins y filtros.
-9. Devolucion y disponibilidad restaurada.
+### 1. Estructura de archivos y carpeta de evidencias (`img/`)
+Muestra la organización del proyecto con la carpeta `img/` conteniendo de `Ev1.png` a `Ev7.png`.
+
+![Estructura de archivos y evidencias](img/Ev1.png)
+
+---
+
+### 2. Documentación Swagger UI - Endpoints de Usuarios (`/users`)
+Visualización interactiva OpenAPI para la gestión del recurso de usuarios.
+
+![Swagger UI - Users](img/Ev2.png)
+
+---
+
+### 3. Documentación Swagger UI - Endpoints de Dispositivos (`/devices`)
+Visualización interactiva OpenAPI para la gestión del catálogo de dispositivos tecnológicos.
+
+![Swagger UI - Devices](img/Ev3.png)
+
+---
+
+### 4. Documentación Swagger UI - Endpoints de Préstamos (`/loans`)
+Visualización interactiva OpenAPI para la administración, filtros e historial de préstamos.
+
+![Swagger UI - Loans](img/Ev4.png)
+
+---
+
+### 5. Respuesta exitosa GET /users
+Consulta exitosa de usuarios registrados con respuesta HTTP 200 OK.
+
+![Respuesta GET Users](img/Ev5.png)
+
+---
+
+### 6. Respuesta exitosa GET /devices
+Consulta del listado de dispositivos registrados con sus estados de disponibilidad y especificaciones.
+
+![Respuesta GET Devices](img/Ev6.png)
+
+---
+
+### 7. Logs de ejecución en consola (HTTP requests & Status codes)
+Logs del servidor Uvicorn con operaciones HTTP (201 Created, 200 OK, 409 Conflict por regla de negocio, 422 Unprocessable Entity por validación).
+
+![Logs del Servidor](img/Ev7.png)
+
+---
 
 ## Rama de trabajo
 
@@ -361,8 +406,8 @@ La actividad solicita una rama llamada:
 device_systems_alembic_relaciones
 ```
 
-Despues de verificar los cambios, debe integrarse con `main` y publicarse en el repositorio GitHub del proyecto.
+Después de verificar los cambios, debe integrarse con `main` y publicarse en el repositorio GitHub del proyecto.
 
-## Reflexion final
+## Reflexión final
 
-Alembic permite evolucionar la estructura de la base de datos de forma controlada y reproducible. Las relaciones garantizan la integridad entre usuarios, equipos y prestamos, mientras que los joins permiten responder consultas utiles sin duplicar datos en la API. Esta combinacion transforma un CRUD basico en un sistema backend preparado para crecer y mantener un historial confiable de operaciones.
+Alembic permite evolucionar la estructura de la base de datos de forma controlada y reproducible. Las relaciones garantizan la integridad entre usuarios, equipos y préstamos, mientras que los joins permiten responder consultas útiles sin duplicar datos en la API. Esta combinación transforma un CRUD básico en un sistema backend preparado para crecer y mantener un historial confiable de operaciones.
