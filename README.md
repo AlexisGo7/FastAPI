@@ -2,6 +2,30 @@
 
 API REST para gestionar usuarios, dispositivos tecnologicos y prestamos con FastAPI, SQLAlchemy, SQLite y Alembic.
 
+![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.141.1-009688?logo=fastapi&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00)
+![Alembic](https://img.shields.io/badge/Alembic-migrations-6BA81E)
+
+## Resumen
+
+`device_systems` es una API backend para controlar un inventario de equipos
+tecnologicos y su historial de prestamos. El proyecto demuestra como pasar de
+un CRUD de usuarios a un sistema relacional con migraciones, claves foraneas,
+relaciones ORM, consultas con joins y reglas de negocio.
+
+## Indice
+
+- [Objetivo](#objetivo-de-la-actividad)
+- [Funcionalidades](#funcionalidades-implementadas)
+- [Arquitectura](#arquitectura)
+- [Instalacion](#instalacion)
+- [Migraciones](#migraciones-con-alembic)
+- [Ejecucion](#ejecucion)
+- [Endpoints](#endpoints-principales)
+- [Pruebas](#pruebas-funcionales)
+- [Evidencias](#evidencias-de-entrega)
+
 ## Objetivo de la actividad
 
 Esta actividad evoluciona el CRUD de usuarios de la guia anterior hacia un sistema backend relacional. El objetivo principal es incorporar migraciones controladas con Alembic, asociaciones entre los modelos `User`, `Device` y `Loan`, y consultas avanzadas con `join`, filtros y relaciones.
@@ -19,6 +43,30 @@ La API conserva el recurso `/users` y agrega `/devices` y `/loans`. El sistema p
 - Filtros por estado, correo de usuario, tipo de dispositivo, marca y texto.
 - Migraciones versionadas con Alembic.
 - Validaciones Pydantic y respuestas documentadas en OpenAPI.
+
+## Arquitectura
+
+| Capa | Responsabilidad |
+| --- | --- |
+| `models` | Tablas, columnas, claves foraneas y relaciones SQLAlchemy. |
+| `schemas` | Validacion de datos de entrada y salida con Pydantic. |
+| `routes` | Endpoints HTTP y codigos de respuesta. |
+| `services` | Consultas, reglas CRUD y transacciones. |
+| `dependencies` | Sesion de base de datos por solicitud. |
+| `alembic` | Migraciones versionadas de la base de datos. |
+
+### Flujo de un prestamo
+
+```mermaid
+flowchart LR
+  U[Usuario existente] --> L[POST /loans]
+  D[Dispositivo disponible] --> L
+  L --> A[Prestamo activo]
+  A --> B[Dispositivo no disponible]
+  B --> R[PATCH /loans/id/return]
+  R --> H[Prestamo devuelto]
+  H --> D2[Dispositivo disponible]
+```
 
 ## Tecnologias
 
@@ -91,6 +139,26 @@ Representa el prestamo de un dispositivo a un usuario. Contiene `user_id` y `dev
 
 Un usuario puede tener muchos prestamos y un dispositivo puede aparecer en varios prestamos historicos. Cada prestamo pertenece exactamente a un usuario y a un dispositivo mediante `ForeignKey()` y `relationship()` con `back_populates`.
 
+## Requisitos previos
+
+- Python 3.11 o superior.
+- Git.
+- PowerShell o una terminal compatible con entornos virtuales.
+
+La aplicacion utiliza SQLite, por lo que no requiere instalar un servidor de
+base de datos adicional.
+
+## Instalacion
+
+Desde la raiz del proyecto:
+
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
 ## Migraciones con Alembic
 
 La base de datos se configura en `alembic.ini` con SQLite:
@@ -109,14 +177,10 @@ alembic upgrade head
 
 En este proyecto existe una migracion versionada en `alembic/versions/8d44b2c4a063_create_devices_and_loans_tables.py`, que crea las tablas `devices` y `loans` sobre la tabla `users` existente.
 
-## Instalacion
-
-Desde la raiz del proyecto:
+Para comprobar que no existen cambios de esquema pendientes:
 
 ```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
+.\venv\Scripts\alembic.exe check
 ```
 
 ## Ejecucion
@@ -134,6 +198,8 @@ La API queda disponible en:
 - API: <http://127.0.0.1:8000>
 - Swagger UI: <http://127.0.0.1:8000/docs>
 - ReDoc: <http://127.0.0.1:8000/redoc>
+
+Para detener el servidor, presiona `Ctrl+C`.
 
 ## Endpoints principales
 
@@ -175,6 +241,17 @@ Filtros disponibles en `GET /devices`: `device_type`, `is_available`, `brand` y 
 
 Filtros disponibles en `/loans`: `status`, `user_email` y `device_type`.
 
+Ejemplos de consultas:
+
+```text
+GET /devices?device_type=laptop&is_available=true
+GET /devices?brand=lenovo&search=thinkpad
+GET /loans?status=active&device_type=laptop
+GET /loans/details?user_email=ana@example.com
+GET /users/1/loans
+GET /devices/1/loans
+```
+
 ## Ejemplos de solicitudes
 
 Crear un dispositivo:
@@ -199,6 +276,28 @@ Crear un prestamo:
 ```
 
 La respuesta detallada de un prestamo incluye el estado, las fechas y los datos basicos del usuario y del dispositivo.
+
+Ejemplo de respuesta detallada:
+
+```json
+{
+  "loan_id": 1,
+  "status": "active",
+  "loan_date": "2026-09-17T10:30:00",
+  "return_date": null,
+  "user": {
+    "id": 1,
+    "name": "Ana Perez",
+    "email": "ana@example.com"
+  },
+  "device": {
+    "id": 1,
+    "name": "ThinkPad T14",
+    "serial_number": "LEN-2024-001",
+    "device_type": "laptop"
+  }
+}
+```
 
 ## Manejo de errores
 
@@ -226,6 +325,19 @@ La implementacion fue verificada con un servidor Uvicorn en un puerto temporal:
 - Dispositivo devuelto con `PATCH /loans/{loan_id}/return`.
 - Disponibilidad restaurada a `true`.
 - Segunda devolucion rechazada con `409`.
+
+Validaciones tecnicas ejecutadas:
+
+```powershell
+python -m compileall -q app alembic
+.\venv\Scripts\alembic.exe check
+```
+
+Resultado esperado:
+
+```text
+No new upgrade operations detected.
+```
 
 ## Evidencias de entrega
 

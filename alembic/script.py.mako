@@ -1,4 +1,6 @@
-"""${message}
+"""Plantilla para nuevas revisiones generadas automaticamente por Alembic.
+
+${message}
 
 Revision ID: ${up_revision}
 Revises: ${down_revision | comma,n}

@@ -1,3 +1,5 @@
+"""Configuracion de Alembic para leer la metadata de los modelos ORM."""
+
 from logging.config import fileConfig
 
 from alembic import context
@@ -14,10 +16,12 @@ config = context.config
 if config.config_file_name is not None:
 	fileConfig(config.config_file_name)
 
+# Alembic compara esta metadata con la base para generar migraciones.
 target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
+	"""Genera SQL de migracion sin abrir una conexion persistente."""
 	url = config.get_main_option("sqlalchemy.url")
 	context.configure(
 		url=url,
@@ -30,6 +34,7 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
+	"""Ejecuta migraciones contra la base configurada en alembic.ini."""
 	connectable = engine_from_config(
 		config.get_section(config.config_ini_section, {}),
 		prefix="sqlalchemy.",

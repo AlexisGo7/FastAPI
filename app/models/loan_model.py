@@ -1,3 +1,5 @@
+"""Modelo ORM que relaciona usuarios con dispositivos prestados."""
+
 from datetime import datetime
 
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
@@ -7,6 +9,8 @@ from app.database.connection import Base
 
 
 class Loan(Base):
+    """Registro de un prestamo activo o historico."""
+
     __tablename__ = "loans"
 
     id = Column(
@@ -15,6 +19,7 @@ class Loan(Base):
         index=True
     )
 
+    # Las claves foraneas garantizan que ambas entidades existan.
     user_id = Column(
         Integer,
         ForeignKey("users.id"),
@@ -33,6 +38,7 @@ class Loan(Base):
         nullable=False
     )
 
+    # Permanece vacia mientras el prestamo siga activo.
     return_date = Column(
         DateTime,
         nullable=True
@@ -43,6 +49,7 @@ class Loan(Base):
         nullable=False
     )
 
+    # Relaciones bidireccionales para consultas y respuestas detalladas.
     user = relationship(
         "User",
         back_populates="loans"

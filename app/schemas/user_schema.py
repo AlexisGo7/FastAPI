@@ -1,3 +1,5 @@
+"""Schemas Pydantic para validar entradas y salidas de usuarios."""
+
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -5,6 +7,8 @@ from typing import Literal
 
 
 class UserCreate(BaseModel):
+    """Datos requeridos para registrar un usuario."""
+
     name: str = Field(
         ...,
         min_length=3,
@@ -29,6 +33,8 @@ class UserCreate(BaseModel):
 
 
 class UserUpdate(BaseModel):
+    """Datos completos requeridos por la operacion PUT."""
+
     name: str = Field(
         ...,
         min_length=3,
@@ -43,6 +49,8 @@ class UserUpdate(BaseModel):
 
 
 class UserPatch(BaseModel):
+    """Campos opcionales aceptados por la operacion PATCH."""
+
     name: str | None = Field(
         default=None,
         min_length=3,
@@ -57,6 +65,8 @@ class UserPatch(BaseModel):
 
 
 class UserResponse(BaseModel):
+    """Representacion publica de un usuario almacenado."""
+
     id: int
     name: str
     email: EmailStr
@@ -64,4 +74,5 @@ class UserResponse(BaseModel):
     is_active: bool
     created_at: datetime
 
+    # Permite construir la respuesta directamente desde un objeto ORM.
     model_config = ConfigDict(from_attributes=True)

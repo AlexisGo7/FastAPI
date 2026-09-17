@@ -1,3 +1,5 @@
+"""Endpoints HTTP para el inventario de dispositivos."""
+
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -26,6 +28,7 @@ router = APIRouter(prefix="/devices", tags=["Devices"])
     response_description="Dispositivo creado correctamente",
 )
 def create_device(device_data: DeviceCreate, db: Session = Depends(get_db)):
+    """Registra un equipo y protege la unicidad de su serial."""
     if device_service.get_device_by_serial_number(db, device_data.serial_number):
         raise HTTPException(status_code=400, detail="El número de serie ya está registrado")
     try:
@@ -43,11 +46,13 @@ def get_devices(
     search: str | None = Query(default=None),
     db: Session = Depends(get_db),
 ):
+    """Lista dispositivos aplicando filtros opcionales."""
     return device_service.get_devices(db, device_type, is_available, brand, search)
 
 
 @router.get("/{device_id}", response_model=DeviceResponse, summary="Buscar dispositivo por ID")
 def get_device(device_id: int, db: Session = Depends(get_db)):
+    """Busca un dispositivo por ID."""
     device = device_service.get_device_by_id(db, device_id)
     if device is None:
         raise HTTPException(status_code=404, detail="Dispositivo no encontrado")
@@ -60,6 +65,7 @@ def update_device(
     device_data: DeviceUpdate,
     db: Session = Depends(get_db),
 ):
+    """Reemplaza todos los datos de un dispositivo."""
     device = device_service.get_device_by_id(db, device_id)
     if device is None:
         raise HTTPException(status_code=404, detail="Dispositivo no encontrado")
@@ -79,6 +85,7 @@ def patch_device(
     device_data: DevicePatch,
     db: Session = Depends(get_db),
 ):
+    """Actualiza parcialmente un dispositivo."""
     device = device_service.get_device_by_id(db, device_id)
     if device is None:
         raise HTTPException(status_code=404, detail="Dispositivo no encontrado")
@@ -95,6 +102,7 @@ def patch_device(
 
 @router.delete("/{device_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Eliminar dispositivo")
 def delete_device(device_id: int, db: Session = Depends(get_db)):
+    """Elimina un dispositivo sin historial; si lo tiene devuelve 409."""
     device = device_service.get_device_by_id(db, device_id)
     if device is None:
         raise HTTPException(status_code=404, detail="Dispositivo no encontrado")

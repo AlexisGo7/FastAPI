@@ -1,3 +1,5 @@
+"""Endpoints HTTP para crear y administrar usuarios."""
+
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -30,6 +32,8 @@ def create_user(
     user_data: UserCreate,
     db: Session = Depends(get_db)
 ):
+    """Crea un usuario y rechaza emails repetidos."""
+    # La consulta previa permite devolver un error claro antes del constraint SQL.
     existing_user = user_service.get_user_by_email(
         db,
         user_data.email
@@ -48,6 +52,7 @@ def create_user(
         )
 
     except IntegrityError:
+        # El rollback deja la sesion reutilizable despues de un error SQL.
         db.rollback()
 
         raise HTTPException(
@@ -73,6 +78,7 @@ def get_users(
     ),
     db: Session = Depends(get_db)
 ):
+    """Lista usuarios usando filtros validados por FastAPI."""
     return user_service.get_users(
         db,
         role=role,
@@ -90,6 +96,7 @@ def get_user(
     user_id: int,
     db: Session = Depends(get_db)
 ):
+    """Devuelve un usuario o responde 404 si no existe."""
     user = user_service.get_user_by_id(
         db,
         user_id
@@ -114,6 +121,7 @@ def update_user(
     user_data: UserUpdate,
     db: Session = Depends(get_db)
 ):
+    """Reemplaza todos los datos editables de un usuario."""
     user = user_service.get_user_by_id(
         db,
         user_id
@@ -162,6 +170,7 @@ def patch_user(
     user_data: UserPatch,
     db: Session = Depends(get_db)
 ):
+    """Actualiza solo los campos enviados por el cliente."""
     user = user_service.get_user_by_id(
         db,
         user_id
@@ -210,6 +219,7 @@ def delete_user(
     user_id: int,
     db: Session = Depends(get_db)
 ):
+    """Elimina un usuario existente y devuelve 204 sin contenido."""
     user = user_service.get_user_by_id(
         db,
         user_id
